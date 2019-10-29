@@ -1,18 +1,21 @@
+'use strict';
+
 const store = {
   items: [
-    { id: cuid(), name: 'apples', checked: false },
-    { id: cuid(), name: 'oranges', checked: false },
-    { id: cuid(), name: 'milk', checked: true },
-    { id: cuid(), name: 'bread', checked: false }
+    { id: cuid(), name: 'apples', checked: false, edit: false },
+    { id: cuid(), name: 'oranges', checked: false, edit: false },
+    { id: cuid(), name: 'milk', checked: true, edit: false },
+    { id: cuid(), name: 'bread', checked: false, edit: false }
   ],
   hideCheckedItems: false
 };
 
 const generateItemElement = function (item) {
-  let itemTitle = `<span class='shopping-item shopping-item__checked'>${item.name}</span>`;
+  if(!item.edit){
+    let itemTitle = `<span class='shopping-item shopping-item_checked'>${item.name}</span>`;
+  
   if (!item.checked) {
-    itemTitle = `
-     <span class='shopping-item'>${item.name}</span>
+       itemTitle = `<span class='shopping-item'>${item.name}</span>
     `;
   }
 
@@ -23,11 +26,16 @@ const generateItemElement = function (item) {
         <button class='shopping-item-toggle js-item-toggle'>
           <span class='button-label'>check</span>
         </button>
+        <form id='edit item'>
+          <label for='item-title-change'>Edit Item</label>
+          <input type='text' class='${item.id}>
+          <button type='submit'>Edit Item</button>
         <button class='shopping-item-delete js-item-delete'>
           <span class='button-label'>delete</span>
         </button>
       </div>
     </li>`;
+
 };
 
 const generateShoppingItemsString = function (shoppingList) {
@@ -145,6 +153,26 @@ const handleToggleFilterClick = function () {
   });
 };
 
+const changeItemTitleInStore = function(id, newTitle){
+  store.items.forEach(function(e){
+    if(e.id === id){
+      e.name = newTitle;
+    }
+  });
+
+};
+
+const handleItemTitleChange = function(){
+  $('.js-shopping-list').on('submit', '#shopping-item-change', function (event){
+    event.preventDefault();
+    const newItemTitle = $(`.${getItemIdFromElement(event.currentTarget)}`.val();
+    changeItemTitleInStore(getItemIdFromElement(event.currentTarget), newItemTitle);
+    render();
+  })
+
+}
+
+
 /**
  * This function will be our callback when the
  * page loads. It is responsible for initially 
@@ -160,6 +188,7 @@ const handleShoppingList = function () {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleToggleFilterClick();
+  handleItemTitleChange();
 };
 
 // when the page loads, call `handleShoppingList`
